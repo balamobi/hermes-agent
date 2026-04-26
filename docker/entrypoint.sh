@@ -68,4 +68,24 @@ if [ -d "$INSTALL_DIR/skills" ]; then
     python3 "$INSTALL_DIR/tools/skills_sync.py"
 fi
 
+# =============================================================================
+# HERMES_UID / HERMES_GID runtime remapping notes:
+#
+# - HERMES_UID: desired UID for the `hermes` user inside the container.
+#   If set and different from the built-in UID (typically 1000), the entrypoint
+#   runs `usermod -u` before dropping privileges.  This lets you match the host
+#   user's UID so that files written by hermes are owned correctly on bind mounts.
+#
+# - HERMES_GID: same as above but for the group.  The entrypoint uses
+#   `groupmod -o -g` (with `-o` to allow non-unique GID, e.g. macOS staff=20).
+#
+# - When the container is started as root (Docker default), the entrypoint
+#   applies both IDs, fixes $HERMES_HOME ownership, then `exec gosu hermes …`
+#   to drop to the unprivileged user before running `hermes "$@"`.
+#
+# - In rootless Podman the container's "root" maps to an unprivileged host UID.
+#   chown will silently fail — this is safe because the volume is already owned
+#   by the mapped user on the host side (see lines 31-32 above).
+# =============================================================================
+
 exec hermes "$@"
