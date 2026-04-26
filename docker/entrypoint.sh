@@ -89,3 +89,24 @@ fi
 # =============================================================================
 
 exec hermes "$@"
+
+# =============================================================================
+# Additional runtime environment variables (optional):
+#
+#   HERMES_HOME        - Base data directory (default: /opt/data)
+#   HERMES_CONFIG_DIR  - Override config directory (default: $HERMES_HOME)
+#   HERMES_API_KEY     - Set API key at runtime instead of .env file
+#   HERMES_MODEL       - Override default model (e.g. anthropic/claude-sonnet-4)
+#   HERMES_PLATFORM    - Force a specific platform (e.g. telegram, discord)
+#
+# Volume mount best practices:
+#   - Bind mount $HERMES_HOME to persist sessions, memories, and skills
+#   - Use --user $(id -u):$(id -g) with rootless Podman for ownership
+#   - If using HERMES_UID, pass it explicitly: docker run -e HERMES_UID=$(id -u)
+#     This ensures new files created inside the container match your host user.
+#
+# Debugging tips:
+#   - Run with bash -x entrypoint.sh to trace execution
+#   - Check logs at $HERMES_HOME/logs/ for runtime issues
+#   - Ensure bind mounts have correct permissions before starting the container
+# =============================================================================
